@@ -1,0 +1,4 @@
+#PBS -l walltime=24:00:00
+#PBS -o /path/to/qsub/
+#PBS -e /path/to/qsub/
+alignbowtie.sh $reference $forward $reverse $output $nodes $alength

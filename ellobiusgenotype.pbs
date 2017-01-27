@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# ---------------------------------------------------------------------------
+# ellobiusgenotype.pbs runs a genotyping job that uses reads2snp for preparation of ellobius genomic data to be run through SexDetector
+
+# Copyright 2016, Rylan Shearn
+
+# usage: ./ellobiusgenotype.pbs
+
+# Revision history:
+# 2016.11.15 - created
+# 2017.01.26 - updated commenting
+# ---------------------------------------------------------------------------
+
+#input parameters
+reference='/path/to/ellobiusanalysis/LOEQ01.fasta'
+referencename='LOEQ01'
+alength='20'
+# mother
+mother1='/path/to/ellobiusanalysis/I16-1510-03-46_S128_L006_R1_001.fastq.gz'
+mother2='/path/to/ellobiusanalysis/I16-1510-03-46_S128_L006_R2_001.fastq.gz'
+mothername='46mother'
+# father
+father1='/path/to/ellobiusanalysis/I16-1510-02-45_S127_L006_R1_001.fastq.gz'
+father2='/path/to/ellobiusanalysis/I16-1510-02-45_S127_L006_R2_001.fastq.gz'
+fathername='45father'
+# Progeny A - male
+PA1='/path/to/ellobiusanalysis/I16-1514-01-40_S135_L006_R1_001.fastq.gz'
+PA2='/path/to/ellobiusanalysis/I16-1514-01-40_S135_L006_R2_001.fastq.gz'
+PAname='40son'
+# Progeny B - male
+PB1='/path/to/ellobiusanalysis/I16-1510-05-52_S130_L006_R1_001.fastq.gz'
+PB2='/path/to/ellobiusanalysis/I16-1510-05-52_S130_L006_R2_001.fastq.gz'
+PBname='52son'
+# Progeny C - male
+PC1='/path/to/ellobiusanalysis/I16-1510-07-57_S132_L006_R1_001.fastq.gz'
+PC2='/path/to/ellobiusanalysis/I16-1510-07-57_S132_L006_R2_001.fastq.gz'
+PCname='62son'
+# Progeny D - male
+PD1='/path/to/ellobiusanalysis/I16-1510-09-66_S134_L006_R1_001.fastq.gz'
+PD2='/path/to/ellobiusanalysis/I16-1510-09-66_S134_L006_R2_001.fastq.gz'
+PDname='66son'
+# Progeny E - female
+PE1='/path/to/ellobiusanalysis/I16-1510-04-50_S129_L006_R1_001.fastq.gz'
+PE2='/path/to/ellobiusanalysis/I16-1510-04-50_S129_L006_R2_001.fastq.gz'
+PEname='50daughter'
+# Progeny F - female
+PF1='/path/to/ellobiusanalysis/I16-1510-06-53_S131_L006_R1_001.fastq.gz'
+PF2='/path/to/ellobiusanalysis/I16-1510-06-53_S131_L006_R2_001.fastq.gz'
+PFname='53daughter'
+# Progeny G - female
+PG1='/path/to/ellobiusanalysis/I16-1510-01-43_S126_L006_R1_001.fastq.gz'
+PG2='/path/to/ellobiusanalysis/I16-1510-01-43_S126_L006_R2_001.fastq.gz'
+PGname='43daughter'
+# Progeny H - female
+PH1='/path/to/ellobiusanalysis/I16-1514-02-44_S136_L006_R1_001.fastq.gz'
+PH2='/path/to/ellobiusanalysis/I16-1514-02-44_S136_L006_R2_001.fastq.gz'
+PHname='44daughter'
+# Progeny I - female
+PI1='/path/to/ellobiusanalysis/I16-1510-08-62_S133_L006_R1_001.fastq.gz'
+PI2='/path/to/ellobiusanalysis/I16-1510-08-62_S133_L006_R2_001.fastq.gz'
+PIname='62male'
+
+#get output directory
+outputdir=$(dirname "${reference}") #get output directory from reference
+
+##genotyping - req none
+genotype=$(qsub -v reference="$reference",outputname="output",memory=30 -N genotyping -l nodes=1:ppn=1,mem=30gb reads2snp.pbs)
+echo $genotype

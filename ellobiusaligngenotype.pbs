@@ -1,0 +1,162 @@
+#!/bin/bash
+
+# ---------------------------------------------------------------------------
+# ellobiusalign.pbs is a job launching script that aligns reads to a reference for preparation of ellobius genomic data to be run through SexDetector
+
+# Copyright 2016, Rylan Shearn
+
+# usage: ./ellobiusalign.pbs
+
+# Revision history:
+# 2016.11.15 - created
+# ---------------------------------------------------------------------------
+
+#input parameters
+reference='/path/to/ellobiusanalysis/LOEQ01.fasta'
+referencename='LOEQ01'
+alength='20'
+# mother
+mother1='/path/to/ellobiusanalysis/I16-1510-03-46_S128_L006_R1_001.fastq.gz'
+mother2='/path/to/ellobiusanalysis/I16-1510-03-46_S128_L006_R2_001.fastq.gz'
+mothername='46mother'
+# father
+father1='/path/to/ellobiusanalysis/I16-1510-02-45_S127_L006_R1_001.fastq.gz'
+father2='/path/to/ellobiusanalysis/I16-1510-02-45_S127_L006_R2_001.fastq.gz'
+fathername='45father'
+# Progeny A - male
+PA1='/path/to/ellobiusanalysis/I16-1514-01-40_S135_L006_R1_001.fastq.gz'
+PA2='/path/to/ellobiusanalysis/I16-1514-01-40_S135_L006_R2_001.fastq.gz'
+PAname='40son'
+# Progeny B - male
+PB1='/path/to/ellobiusanalysis/I16-1510-05-52_S130_L006_R1_001.fastq.gz'
+PB2='/path/to/ellobiusanalysis/I16-1510-05-52_S130_L006_R2_001.fastq.gz'
+PBname='52son'
+# Progeny C - male
+PC1='/path/to/ellobiusanalysis/I16-1510-07-57_S132_L006_R1_001.fastq.gz'
+PC2='/path/to/ellobiusanalysis/I16-1510-07-57_S132_L006_R2_001.fastq.gz'
+PCname='62son'
+# Progeny D - male
+PD1='/path/to/ellobiusanalysis/I16-1510-09-66_S134_L006_R1_001.fastq.gz'
+PD2='/path/to/ellobiusanalysis/I16-1510-09-66_S134_L006_R2_001.fastq.gz'
+PDname='66son'
+# Progeny E - female
+PE1='/path/to/ellobiusanalysis/I16-1510-04-50_S129_L006_R1_001.fastq.gz'
+PE2='/path/to/ellobiusanalysis/I16-1510-04-50_S129_L006_R2_001.fastq.gz'
+PEname='50daughter'
+# Progeny F - female
+PF1='/path/to/ellobiusanalysis/I16-1510-06-53_S131_L006_R1_001.fastq.gz'
+PF2='/path/to/ellobiusanalysis/I16-1510-06-53_S131_L006_R2_001.fastq.gz'
+PFname='53daughter'
+# Progeny G - female
+PG1='/path/to/ellobiusanalysis/I16-1510-01-43_S126_L006_R1_001.fastq.gz'
+PG2='/path/to/ellobiusanalysis/I16-1510-01-43_S126_L006_R2_001.fastq.gz'
+PGname='43daughter'
+# Progeny H - female
+PH1='/path/to/ellobiusanalysis/I16-1514-02-44_S136_L006_R1_001.fastq.gz'
+PH2='/path/to/ellobiusanalysis/I16-1514-02-44_S136_L006_R2_001.fastq.gz'
+PHname='44daughter'
+# Progeny I - female
+PI1='/path/to/ellobiusanalysis/I16-1510-08-62_S133_L006_R1_001.fastq.gz'
+PI2='/path/to/ellobiusanalysis/I16-1510-08-62_S133_L006_R2_001.fastq.gz'
+PIname='62male'
+
+#get output directory
+outputdir=$(dirname "${reference}") #get output directory from reference
+
+#index reference fasta with bowtie2 - no dependencies
+referenceindex=$(qsub -v reference="$reference",referenceindexed="$referencename" -N "$referencename"index bowtieindex.pbs)
+echo $referenceindex
+
+##align mother - req referenceindex
+alignmother=$(qsub -W depend=afterok:$referenceindex -v forward="$mother1",reverse="$mother2",reference="$referencename",output="$mothername",nodes=32,alength="$alength" -N "$mothername"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignmother
+
+##align father - req referenceindex
+alignfather=$(qsub -W depend=afterok:$referenceindex -v forward="$father1",reverse="$father2",reference="$referencename",output="$fathername",nodes=32,alength="$alength" -N "$fathername"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignfather
+
+##align Progeny A - req referenceindex
+alignPA=$(qsub -W depend=afterok:$referenceindex -v forward="$PA1",reverse="$PA2",reference="$referencename",output="$PAname",nodes=32,alength="$alength" -N "$PAname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPA
+
+##align Progeny B - req referenceindex
+alignPB=$(qsub -W depend=afterok:$referenceindex -v forward="$PB1",reverse="$PB2",reference="$referencename",output="$PBname",nodes=32,alength="$alength" -N "$PBname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPB
+
+##align Progeny C - req referenceindex
+alignPC=$(qsub -W depend=afterok:$referenceindex -v forward="$PC1",reverse="$PC2",reference="$referencename",output="$PCname",nodes=32,alength="$alength" -N "$PCname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPC
+
+##align Progeny D - req referenceindex
+alignPD=$(qsub -W depend=afterok:$referenceindex -v forward="$PD1",reverse="$PD2",reference="$referencename",output="$PDname",nodes=32,alength="$alength" -N "$PDname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPD
+
+##align Progeny E - req referenceindex
+alignPE=$(qsub -W depend=afterok:$referenceindex -v forward="$PE1",reverse="$PE2",reference="$referencename",output="$PEname",nodes=32,alength="$alength" -N "$PEname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPE
+
+##align Progeny F - req referenceindex
+alignPF=$(qsub -W depend=afterok:$referenceindex -v forward="$PF1",reverse="$PF2",reference="$referencename",output="$PFname",nodes=32,alength="$alength" -N "$PFname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPF
+
+##align Progeny G - req referenceindex
+alignPG=$(qsub -W depend=afterok:$referenceindex -v forward="$PG1",reverse="$PG2",reference="$referencename",output="$PGname",nodes=32,alength="$alength" -N "$PGname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPG
+
+##align Progeny H - req referenceindex
+alignPH=$(qsub -W depend=afterok:$referenceindex -v forward="$PH1",reverse="$PH2",reference="$referencename",output="$PHname",nodes=32,alength="$alength" -N "$PHname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPH
+
+##align Progeny I - req referenceindex
+alignPI=$(qsub -W depend=afterok:$referenceindex -v forward="$PI1",reverse="$PI2",reference="$referencename",output="$PHname",nodes=32,alength="$alength" -N "$PIname"align -l nodes=1:ppn=32,mem=3gb alignbowtie.pbs)
+echo $alignPI
+
+##sort sam file for mother - req alignmother
+sortmother=$(qsub -W depend=afterok:$alignmother -v reference="$reference",sam="$outputdir"/"$mothername".sam,memory=30 -N "$mothername"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortmother
+
+##sort sam file for father - req alignfather
+sortfather=$(qsub -W depend=afterok:$alignfather -v reference="$reference",sam="$outputdir"/"$fathername".sam,memory=30 -N "$fathername"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortfather
+
+##sort sam file for PA - req alignPA
+sortPA=$(qsub -W depend=afterok:$alignPA -v reference="$reference",sam="$outputdir"/"$PAname".sam,memory=30 -N "$PAname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPA
+
+##sort sam file for PB - req alignPB
+sortPB=$(qsub -W depend=afterok:$alignPB -v reference="$reference",sam="$outputdir"/"$PBname".sam,memory=30 -N "$PBname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPB
+
+##sort sam file for PC - req alignPC
+sortPC=$(qsub -W depend=afterok:$alignPC -v reference="$reference",sam="$outputdir"/"$PCname".sam,memory=30 -N "$PCname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPC
+
+##sort sam file for PD - req alignPD
+sortPD=$(qsub -W depend=afterok:$alignPD -v reference="$reference",sam="$outputdir"/"$PDname".sam,memory=30 -N "$PDname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPD
+
+##sort sam file for PE - req alignPE
+sortPE=$(qsub -W depend=afterok:$alignPE -v reference="$reference",sam="$outputdir"/"$PEname".sam,memory=30 -N "$PEname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPE
+
+##sort sam file for PF - req alignPF
+sortPF=$(qsub -W depend=afterok:$alignPF -v reference="$reference",sam="$outputdir"/"$PFname".sam,memory=30 -N "$PFname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPF
+
+##sort sam file for PG - req alignPG
+sortPG=$(qsub -W depend=afterok:$alignPG -v reference="$reference",sam="$outputdir"/"$PGname".sam,memory=30 -N "$PGname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPG
+
+##sort sam file for PH - req alignPH
+sortPH=$(qsub -W depend=afterok:$alignPH -v reference="$reference",sam="$outputdir"/"$PHname".sam,memory=30 -N "$PHname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPH
+
+##sort sam file for PI - req alignPI
+sortPI=$(qsub -W depend=afterok:$alignPI -v reference="$reference",sam="$outputdir"/"$PIname".sam,memory=30 -N "$PIname"sort -l nodes=1:ppn=1,mem=30gb samtoolssort.pbs)
+echo $sortPI
+
+##genotyping - req none
+genotype=$(qsub -W depend=afterok:$sortPA:$sortPB:$sortPC:$sortPD:$sortPE:$sortPF:$sortPG:$sortPH:$sortPI -v reference="$reference",outputname="output",memory=30 -N genotyping -l nodes=1:ppn=1,mem=30gb reads2snp.pbs)
+echo $genotype
+
+

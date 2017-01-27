@@ -1,0 +1,4 @@
+#PBS -q q1tera
+#PBS -o /panhome/shearn/qsub/
+#PBS -e /panhome/shearn/qsub/
+sexdet.sh $alrfile $genfile $gensum

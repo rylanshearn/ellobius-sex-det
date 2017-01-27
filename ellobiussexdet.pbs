@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# ---------------------------------------------------------------------------
+# ellobiussexdet.pbs is a job launching script that runs ellobius genomic data through SexDetector (assuming it's already been genotyped etc)
+
+# Copyright 2016, Rylan Shearn
+
+# usage: ./ellobiussexdet.pbs
+
+# Revision history:
+# 2016.12.14 - created
+# ---------------------------------------------------------------------------
+
+#input parameters
+genfile='/path/to/ellobiusanalysis/output_0.gen'
+alrfile='/path/to/ellobiusanalysis/output.alr'
+gensum='/path/to/ellobiusanalysis/ellobius.gen_summary'
+
+#get output directory
+outputdir=$(dirname "${reference}") #get output directory from reference
+
+##sexdet - req none
+sexdet=$(qsub -v alrfile="$alrfile",genfile="$genfile",gensum="$gensum",memory=30 -N sexdet -l nodes=1:ppn=1,mem=10gb sexdet.pbs)
+echo $sexdet

@@ -1,0 +1,4 @@
+#PBS -l walltime=24:00:00
+#PBS -o /panhome/shearn/qsub/
+#PBS -e /panhome/shearn/qsub/
+samtoolssort.sh $reference $sam $memory
